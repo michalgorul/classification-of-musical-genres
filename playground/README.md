@@ -70,3 +70,29 @@ Metric functions are similar to loss functions, except that the results from eva
 - With such a scalar sigmoid output on a binary classification problem, the loss function you should use is `binary_crossentropy`. 
 - The `rmsprop` optimizer is generally a good enough choice, whatever your problem. That’s one less thing for you to worry about.
 - As they get better on their training data, neural networks eventually start overfitting and end up obtaining increasingly worse results on data they’ve never seen before. Be sure to always monitor performance on data that is outside of the training set.
+
+### Multiclass classification problem (more than two output classes)
+- If you’re trying to classify data points among N classes, your network should end with a Dense layer of size N.
+- In a single-label, multiclass classification problem, your network should end with a softmax activation so that it will output a probability distribution over the N output classes.
+- Categorical crossentropy is almost always the loss function you should use for such problems. It minimizes the distance between the probability distributions output by the network and the true distribution of the targets.
+- There are two ways to handle labels in multiclass classification:
+  - Encoding the labels via categorical encoding (also known as onehot encoding) and using categorical_crossentropy as a loss function
+  - Encoding the labels as integers and using the sparse_categorical_-crossentropy loss function
+- If you need to classify data into a large number of categories, you should avoid creating information bottlenecks in your network due to intermediate layers that are too small.
+
+### Scalar Regression problem (more than two output classes)
+- Regression is done using different loss functions than what we used for classification. Mean squared error (MSE) is a loss function commonly used for regression.
+- Similarly, evaluation metrics to be used for regression differ from those used for classification; naturally, the concept of accuracy doesn’t apply for regression. A common regression metric is mean absolute error(MAE).
+- When features in the input data have values in different ranges, each feature should be scaled independently as a preprocessing step.
+- When there is little data available, using K-fold validation is a great way to reliably evaluate a model.
+- When little training data is available, it’s preferable to use a small network with few hidden layers (typically only one or two), in order to avoid severe overfitting.
+
+
+### Some other tips:
+- You’ll usually need to preprocess raw data before feeding it into a neural network.
+- When your data has features with different ranges, scale each feature independently as part of preprocessing.
+- As training progresses, neural networks eventually begin to overfit and obtain worse results on never-before-seen data.
+- If you don’t have much training data, use a small network with only one or two hidden layers, to avoid severe overfitting.
+- If your data is divided into many categories, you may cause information bottlenecks if you make the intermediate layers too small.
+- Regression uses different loss functions and different evaluation metrics than classification.
+- When you’re working with little data, K-fold validation can help reliably evaluate your model.

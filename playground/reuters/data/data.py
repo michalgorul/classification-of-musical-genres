@@ -35,7 +35,7 @@ def to_one_hot(labels: npt.NDArray[Any], dimension: int = 46):
     with a 1 in the place of the label index. Also, to_categorical func from keras could be used
     :param labels: a tensor of labels
     :param dimension: number of dimensions, in this case number of topics in data
-    :return:
+    :return: categorical encoded data
     """
     results = np.zeros((len(labels), dimension))
     for i, label in enumerate(labels):

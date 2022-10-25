@@ -1,10 +1,9 @@
 from typing import Any
 
-from keras import models, optimizers, metrics
-
+from keras import activations
 from keras import layers
 from keras import losses
-from keras import activations
+from keras import models, optimizers, metrics
 
 
 def build_model(hidden_units: int = 16) -> Any:
@@ -15,8 +14,8 @@ def build_model(hidden_units: int = 16) -> Any:
     “1”: how likely the review is to be positive). A relu (rectified linear unit) is a function
     meant to zero out negative values, whereas a sigmoid “squashes” arbitrary values into the [0, 1]
     interval, outputting something that can be interpreted as a probability.
-    :param hidden_units:
-    :return:
+    :param hidden_units: number of hidden layers
+    :return: a model
     """
     model = models.Sequential()
     model.add(layers.Dense(hidden_units, activation=activations.relu, input_shape=(10000,)))
