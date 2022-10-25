@@ -1,6 +1,7 @@
-from typing import Any, List, Dict
+from typing import Any, List, Dict, Sequence
 
 import tensorflow
+from pandas._typing import npt
 
 
 def print_train_data(train_data: List[Any]) -> None:

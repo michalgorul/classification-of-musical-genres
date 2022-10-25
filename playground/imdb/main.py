@@ -42,10 +42,6 @@ show_training_and_validation_accuracy(
     epochs=num_of_epochs, acc=accuracy, val_acc=validation_loss_values
 )
 
-# Getting [val_binary_accuracy, accuracy]
+# Getting [val_loss, val_binary_accuracy]
 results = model.evaluate(test_data, test_labels)
 print(results)
-
-# How model is confident in predictions
-predictions = model.predictions(test_data)
-print(predictions)

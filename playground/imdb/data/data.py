@@ -5,6 +5,12 @@ import numpy.typing as npt
 from keras.datasets import imdb
 
 
+# IMDB dataset: a set of 50,000 highly polarized reviews
+# from the Internet Movie Database. They’re split into 25,000 reviews for
+# training and 25,000 reviews for testing, each set consisting of 50% negative
+# and 50% positive reviews.
+
+
 def vectorize_sequences(sequences: Sequence[List[int]], dimension: int = 10000) -> npt.NDArray[Any]:
     """
     Function turning lists into tensors
