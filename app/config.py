@@ -2,7 +2,9 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    resource_path: str
+    gtzan_zip_path: str
+    gtzan_genres_original: str
+    gtzan_images_original: str
 
     class Config:
         env_file = "../ENV/local.env"

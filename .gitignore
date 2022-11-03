@@ -43,3 +43,6 @@ resources/
 # ENV
 local.env
 
+# Datasets
+app/datasets/
+
