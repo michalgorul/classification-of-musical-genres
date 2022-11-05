@@ -55,20 +55,28 @@ class GtzanDataset:
         print(f"Random spectogram file path: \n\t{file_path}\n")
         return file_path, file_name
 
+    def _get_original_file_path_and_name(self, file_path: str | None) -> Tuple[str, str]:
+        if not file_path:
+            return self._get_random_original_file()
+        return file_path, file_path.split("\\")[-1]
+
+    def _get_spectogram_file_path_and_name(self, file_path: str | None) -> Tuple[str, str]:
+        if not file_path:
+            return self._get_random_spectogram_file()
+        return file_path, file_path.split("\\")[-1]
+
     def play_original_file(self, original_file_path: str | None) -> None:
         try:
-            file_path = original_file_path or self._get_random_original_file()[0]
+            file_path, _ = self._get_original_file_path_and_name(file_path=original_file_path)
             winsound.PlaySound(file_path, winsound.SND_FILENAME)
         except Exception as e:
             print(f"Failed to play original file, err={e}")
+        return
 
     def show_sound_wave(self, original_file_path: str | None) -> None:
-        if not original_file_path:
-            wav_file_path, wav_file_name = self._get_random_original_file()
-        else:
-            wav_file_path = original_file_path
-            wav_file_name = original_file_path.split("\\")[-1]
-
+        wav_file_path, wav_file_name = self._get_original_file_path_and_name(
+            file_path=original_file_path
+        )
         print(wav_file_name)
 
         y, sample_rate = librosa.load(wav_file_path)
@@ -84,13 +92,10 @@ class GtzanDataset:
         librosa.display.waveshow(y=y, sr=sample_rate)
         plt.title(f"Sound wave of {wav_file_name}", fontsize=20)
         plt.show()
+        return
 
-    def show_spectogram(self, image_file_path: str | None) -> None:
-        if not image_file_path:
-            file_path, file_name = self._get_random_spectogram_file()
-        else:
-            file_path = image_file_path
-            file_name = image_file_path.split("\\")[-1]
+    def show_spectogram_from_dataset(self, image_file_path: str | None) -> None:
+        file_path, file_name = self._get_spectogram_file_path_and_name(file_path=image_file_path)
 
         img = imageio.v2.imread(file_path)
         print(f"Image dimensions: \n\t{img.shape}")
@@ -98,3 +103,42 @@ class GtzanDataset:
         plt.imshow(img)
         plt.title(file_name)
         plt.show()
+        return
+
+    def create_decibel_spectogram_from_sound_file(self, sound_file_path: str | None) -> None:
+        wav_file_path, wav_file_name = self._get_original_file_path_and_name(
+            file_path=sound_file_path
+        )
+        y, sample_rate = librosa.load(wav_file_path)
+
+        # Short-time Fourier transform (STFT).
+        d = np.abs(librosa.stft(y, n_fft=2048, hop_length=512))
+        print("Shape of d object:", np.shape(d))
+        # Convert amplitude spectrogram to Decibels-scaled spectrogram.
+        decibels = librosa.amplitude_to_db(d, ref=np.max)
+        # Creating the spectogram.
+        plt.figure(figsize=(16, 6))
+        librosa.display.specshow(
+            decibels, sr=sample_rate, hop_length=512, x_axis="time", y_axis="log"
+        )
+        plt.colorbar()
+        plt.title("Decibels-scaled spectrogram", fontsize=20)
+        plt.show()
+        return
+
+    def create_mel_spectogram_from_sound_file(self, sound_file_path: str | None) -> None:
+        wav_file_path, wav_file_name = self._get_original_file_path_and_name(
+            file_path=sound_file_path
+        )
+        y, sample_rate = librosa.load(wav_file_path)
+
+        s = librosa.feature.melspectrogram(y=y, sr=sample_rate)
+        decibels = librosa.amplitude_to_db(s, ref=np.max)
+        plt.figure(figsize=(15, 5))
+        librosa.display.specshow(
+            decibels, sr=sample_rate, hop_length=512, x_axis="time", y_axis="log"
+        )
+        plt.colorbar()
+        plt.title("Mel spectrogram", fontsize=20)
+        plt.show()
+        return
