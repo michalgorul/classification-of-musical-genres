@@ -142,3 +142,16 @@ class GtzanDataset:
         plt.title("Mel spectrogram", fontsize=20)
         plt.show()
         return
+
+    def compare_created_to_read_spectogram(self, sound_file_path: str | None) -> None:
+        wav_file_path, _ = self._get_original_file_path_and_name(file_path=sound_file_path)
+        self.create_decibel_spectogram_from_sound_file(wav_file_path)
+        self.create_mel_spectogram_from_sound_file(wav_file_path)
+
+        image_file_path = (
+            wav_file_path.replace("genres_original", "images_original")
+            .replace(".", "")
+            .replace("wav", ".png")
+        )
+        self.show_spectogram_from_dataset(image_file_path=image_file_path)
+        return
