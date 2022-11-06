@@ -45,5 +45,8 @@ local.env
 
 # Datasets
 app/datasets/
-app/data/gztan/data/
+app/gztan/data/dataset/
+app/gztan/data/train/
+app/gztan/data/test/
+app/gztan/data/validation/
 

@@ -1,4 +1,4 @@
-from app.data.gztan.gztan import GtzanDataset
+from app.gztan.data.gztan import GtzanDataset
 
 gtzan: GtzanDataset = GtzanDataset()
 
@@ -9,4 +9,5 @@ gtzan: GtzanDataset = GtzanDataset()
 # gtzan.create_decibel_spectogram_from_sound_file(sound_file_path=None)
 # gtzan.create_mel_spectogram_from_sound_file(sound_file_path=None)
 # gtzan.compare_created_to_read_spectogram(sound_file_path=None)
-gtzan.data_init()
+# gtzan.data_init()
+gtzan.sanity_data_test()

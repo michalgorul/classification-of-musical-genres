@@ -28,6 +28,19 @@ class GtzanDataset:
             "test_dir": settings.gztan_test_dir,
         }
 
+        self.genres = [
+            "blues",
+            "classical",
+            "country",
+            "disco",
+            "hiphop",
+            "jazz",
+            "metal",
+            "pop",
+            "reggae",
+            "rock",
+        ]
+
     def list_files_info(self) -> None:
         # opening the zip file in READ mode
         with ZipFile(self.gtzan_dataset_zip_path, "r") as zip_file:
@@ -221,3 +234,20 @@ class GtzanDataset:
             self._copy_files(
                 file_paths=val_files, dest_dir=f"{self.directories['val_dir']}\\{genre}\\"
             )
+
+    def sanity_data_test(self) -> None:
+
+        print("Genres directories in train data:", len(os.listdir(self.directories["train_dir"])))
+        print("Genres directories in test data:", len(os.listdir(self.directories["test_dir"])))
+        print(
+            "Genres directories in validation data:", len(os.listdir(self.directories["val_dir"]))
+        )
+
+        print("\nTotal number of images in:")
+        for genre in self.genres:
+            for folder_name, path in self.directories.items():
+                print(
+                    f"\t{folder_name} of {genre} songs: " +
+                    str(len(os.listdir(f"{self.directories[folder_name]}\\{genre}"))),
+                )
+            print()
