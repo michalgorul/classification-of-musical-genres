@@ -251,3 +251,6 @@ class GtzanDataset:
                     str(len(os.listdir(f"{self.directories[folder_name]}\\{genre}"))),
                 )
             print()
+
+
+gtzan: GtzanDataset = GtzanDataset()
