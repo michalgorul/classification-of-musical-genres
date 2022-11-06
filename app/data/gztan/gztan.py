@@ -1,7 +1,9 @@
 import datetime
+import glob
 import os
 import random
-from typing import Tuple
+import shutil
+from typing import Tuple, Dict, List
 from zipfile import ZipFile
 
 import imageio
@@ -15,10 +17,16 @@ from app.config import settings
 
 
 class GtzanDataset:
-    def __init__(self):
+    def __init__(self) -> None:
         self.gtzan_dataset_zip_path: str = settings.gtzan_zip_path
         self.gtzan_genres_original_path: str = settings.gtzan_genres_original
         self.gtzan_images_original_path: str = settings.gtzan_images_original
+
+        self.directories: Dict[str, str] = {
+            "train_dir": settings.gztan_train_dir,
+            "val_dir": settings.gztan_validation_dir,
+            "test_dir": settings.gztan_test_dir,
+        }
 
     def list_files_info(self) -> None:
         # opening the zip file in READ mode
@@ -155,3 +163,61 @@ class GtzanDataset:
         )
         self.show_spectogram_from_dataset(image_file_path=image_file_path)
         return
+
+    def _create_directories(self) -> None:
+        # Create folders
+        for folder_name, path in self.directories.items():
+            if os.path.exists(path):
+                shutil.rmtree(path)
+                os.mkdir(path)
+            else:
+                os.mkdir(path)
+
+    def _copy_files(self, file_paths: List[str], dest_dir: str) -> None:
+        try:
+            for file in file_paths:
+                shutil.copy(
+                    file,
+                    os.path.join(
+                        os.path.join(dest_dir),
+                        os.path.split(file)[1],
+                    ),
+                )
+        except KeyError as e:
+            print(f"Failed to copy files to destination directory, error={e}")
+
+    def data_init(self) -> None:
+        self._create_directories()
+
+        genres = list(os.listdir(self.gtzan_images_original_path))
+        for genre in genres:
+            # Finding all images & split in train, test, and validation
+            src_file_paths = []
+
+            for im in glob.glob(
+                os.path.join(self.gtzan_images_original_path, f"{genre}", "*.png"), recursive=True
+            ):
+                src_file_paths.append(im)
+
+            # Randomizing directories content
+            random.shuffle(src_file_paths)
+
+            test_files = src_file_paths[0:10]
+            val_files = src_file_paths[10:20]
+            train_files = src_file_paths[20:]
+
+            #  make destination folders for train and test images
+            for folder_name, path in self.directories.items():
+                if not os.path.exists(path + f"\\{genre}"):
+                    os.mkdir(f"{path}\\{genre}")
+
+            # Coping training and testing images over
+            self._copy_files(
+                file_paths=train_files, dest_dir=f"{self.directories['train_dir']}\\{genre}\\"
+            )
+            self._copy_files(
+                file_paths=test_files, dest_dir=f"{self.directories['test_dir']}\\{genre}\\"
+            )
+            self._copy_files(
+                file_paths=val_files, dest_dir=f"{self.directories['val_dir']}\\{genre}\\"
+            )
