@@ -12,6 +12,7 @@ import librosa.display
 import numpy as np
 import winsound
 from matplotlib import pyplot as plt
+from matplotlib.backends.backend_template import FigureCanvas
 from pydub import AudioSegment
 
 from app.config import settings
@@ -23,6 +24,7 @@ class GtzanDataset:
         self.gtzan_genres_original_path: str = settings.gtzan_genres_original
         self.gtzan_genres_3_sec_original: str = settings.gtzan_genres_3_sec_original
         self.gtzan_images_original_path: str = settings.gtzan_images_original
+        self.gtzan_images_3_sec_original: str = settings.gtzan_images_3_sec_original
 
         self.directories: Dict[str, str] = {
             "train_dir": settings.gztan_train_dir,
@@ -236,6 +238,29 @@ class GtzanDataset:
                         )
                     except Exception:
                         pass
+
+
+    def make_3_sec_images(self):
+        genres = list(os.listdir(self.gtzan_genres_3_sec_original))
+
+        for g in genres:
+            print(f"Current genre: {g}")
+            j = 0
+            for filename in os.listdir(os.path.join(self.gtzan_genres_3_sec_original, f"{g}")):
+                song = os.path.join(f'{self.gtzan_genres_3_sec_original}\\{g}', f'{filename}')
+                j = j + 1
+
+                y, sr = librosa.load(song, duration=3)
+                # print(sr)
+                mels = librosa.feature.melspectrogram(y=y, sr=sr)
+                fig = plt.Figure()
+                canvas = FigureCanvas(fig)
+                p = plt.imshow(librosa.power_to_db(mels, ref=np.max))
+
+                genre_dir_path = f'{self.gtzan_images_3_sec_original}\\{g}'
+                if not os.path.exists(genre_dir_path):
+                    os.mkdir(genre_dir_path)
+                plt.savefig(f'{genre_dir_path}\\{g + str(j)}.png')
 
     def data_init(self) -> None:
         self._create_directories()

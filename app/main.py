@@ -22,7 +22,8 @@ from playground.utils.utils import disable_cuda
 # gtzan.data_init()
 # gtzan.sanity_data_test()
 gtzan = GtzanDataset()
-gtzan.make_3_sec_wavs()
+# gtzan.make_3_sec_wavs()
+gtzan.make_3_sec_images()
 # build_model()
 
 # list_output_of_generators()

@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     gtzan_genres_original: str
     gtzan_genres_3_sec_original: str
     gtzan_images_original: str
+    gtzan_images_3_sec_original: str
 
     gztan_train_dir: str
     gztan_validation_dir: str
