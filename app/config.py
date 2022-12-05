@@ -4,6 +4,7 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     gtzan_zip_path: str
     gtzan_genres_original: str
+    gtzan_genres_3_sec_original: str
     gtzan_images_original: str
 
     gztan_train_dir: str

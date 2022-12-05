@@ -12,6 +12,7 @@ import librosa.display
 import numpy as np
 import winsound
 from matplotlib import pyplot as plt
+from pydub import AudioSegment
 
 from app.config import settings
 
@@ -20,6 +21,7 @@ class GtzanDataset:
     def __init__(self) -> None:
         self.gtzan_dataset_zip_path: str = settings.gtzan_zip_path
         self.gtzan_genres_original_path: str = settings.gtzan_genres_original
+        self.gtzan_genres_3_sec_original: str = settings.gtzan_genres_3_sec_original
         self.gtzan_images_original_path: str = settings.gtzan_images_original
 
         self.directories: Dict[str, str] = {
@@ -199,6 +201,42 @@ class GtzanDataset:
         except KeyError as e:
             print(f"Failed to copy files to destination directory, error={e}")
 
+    def make_3_sec_wavs(self):
+        genres = list(os.listdir(self.gtzan_genres_original_path))
+        i = 0
+        for genre in genres:
+            print(f"Current genre: {genre}")
+            # Finding all wavs & create 3sec songs
+            src_file_paths = []
+
+            path = self.gtzan_genres_original_path
+            for im in glob.glob(os.path.join(path, f"{genre}", "*.wav"), recursive=True):
+                src_file_paths.append(im)
+            j = 0
+            for song in src_file_paths:
+                # print(f"Current song: {song}")
+
+                j = j + 1
+                for w in range(0, 10):
+                    try:
+                        i = i + 1
+                        t1 = 3 * w * 1000
+                        t2 = 3 * (w + 1) * 1000
+                        new_audio = AudioSegment.from_wav(song)
+                        new = new_audio[t1:t2]
+
+                        genre_dir_path = f"{self.gtzan_genres_3_sec_original}\\{genre}"
+                        if not os.path.exists(genre_dir_path):
+                            os.mkdir(genre_dir_path)
+
+                        file_name = genre + str(j) + str(w)
+                        new.export(
+                            f"{genre_dir_path}\\{file_name}.wav",
+                            format="wav",
+                        )
+                    except Exception:
+                        pass
+
     def data_init(self) -> None:
         self._create_directories()
 
@@ -247,8 +285,8 @@ class GtzanDataset:
         for genre in self.genres:
             for folder_name, path in self.directories.items():
                 print(
-                    f"\t{folder_name} of {genre} songs: " +
-                    str(len(os.listdir(f"{self.directories[folder_name]}\\{genre}"))),
+                    f"\t{folder_name} of {genre} songs: "
+                    + str(len(os.listdir(f"{self.directories[folder_name]}\\{genre}"))),
                 )
             print()
 
