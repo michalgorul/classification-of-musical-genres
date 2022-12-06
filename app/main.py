@@ -1,29 +1,18 @@
-from app.gztan.data.data import (
-    get_train_data_generator,
-    get_validation_data_generator,
-)
 from app.gztan.data.gztan import GtzanDataset
-from app.gztan.model.model import build_model
-from app.plotting.plot import (
-    show_training_and_validation_loss,
-    show_training_and_validation_accuracy,
-)
-from playground.utils.utils import disable_cuda
 
 # disable_cuda()
 
 # print(gtzan.list_files_info())
-# gtzan.play_original_file(original_file_path=None)
-# gtzan.show_sound_wave(original_file_path=None)
-# gtzan.show_spectogram_from_dataset(image_file_path=None)
-# gtzan.create_decibel_spectogram_from_sound_file(sound_file_path=None)
-# gtzan.create_mel_spectogram_from_sound_file(sound_file_path=None)
-# gtzan.compare_created_to_read_spectogram(sound_file_path=None)
 # gtzan.data_init()
 # gtzan.sanity_data_test()
 gtzan = GtzanDataset()
 # gtzan.make_3_sec_wavs()
 gtzan.make_3_sec_images()
+
+gtzan.data_init()
+gtzan.sanity_data_test()
+
+
 # build_model()
 
 # list_output_of_generators()

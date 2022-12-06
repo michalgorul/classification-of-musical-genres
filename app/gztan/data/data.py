@@ -2,8 +2,8 @@ from keras.preprocessing.image import ImageDataGenerator, DirectoryIterator
 
 from app.gztan.data.gztan import gtzan
 
-train_dir = gtzan.directories.get("train_dir")
-val_dir = gtzan.directories.get("val_dir")
+train_dir = gtzan.directories_10sec.get("train_dir")
+val_dir = gtzan.directories_10sec.get("val_dir")
 
 
 def get_train_data_generator() -> DirectoryIterator:

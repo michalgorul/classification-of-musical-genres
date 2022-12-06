@@ -26,10 +26,16 @@ class GtzanDataset:
         self.gtzan_images_original_path: str = settings.gtzan_images_original
         self.gtzan_images_3_sec_original: str = settings.gtzan_images_3_sec_original
 
-        self.directories: Dict[str, str] = {
+        self.directories_10sec: Dict[str, str] = {
             "train_dir": settings.gztan_train_dir,
             "val_dir": settings.gztan_validation_dir,
             "test_dir": settings.gztan_test_dir,
+        }
+
+        self.directories_3sec: Dict[str, str] = {
+            "train_dir": settings.gztan_train_3sec_dir,
+            "val_dir": settings.gztan_validation_3sec_dir,
+            "test_dir": settings.gztan_test_3sec_dir,
         }
 
         self.genres = [
@@ -181,9 +187,9 @@ class GtzanDataset:
         self.show_spectogram_from_dataset(image_file_path=image_file_path)
         return
 
-    def _create_directories(self) -> None:
+    def _create_directories(self, directories: Dict[str, str]) -> None:
         # Create folders
-        for folder_name, path in self.directories.items():
+        for folder_name, path in directories.items():
             if os.path.exists(path):
                 shutil.rmtree(path)
                 os.mkdir(path)
@@ -203,7 +209,7 @@ class GtzanDataset:
         except KeyError as e:
             print(f"Failed to copy files to destination directory, error={e}")
 
-    def make_3_sec_wavs(self):
+    def make_3_sec_wavs(self) -> None:
         genres = list(os.listdir(self.gtzan_genres_original_path))
         i = 0
         for genre in genres:
@@ -239,14 +245,15 @@ class GtzanDataset:
                     except Exception:
                         pass
 
-
-    def make_3_sec_images(self):
+    def make_3_sec_images(self) -> None:
         genres = list(os.listdir(self.gtzan_genres_3_sec_original))
 
         for g in genres:
             print(f"Current genre: {g}")
             j = 0
             for filename in os.listdir(os.path.join(self.gtzan_genres_3_sec_original, f"{g}")):
+                print(f"Current filename: {filename}")
+
                 song = os.path.join(f'{self.gtzan_genres_3_sec_original}\\{g}', f'{filename}')
                 j = j + 1
 
@@ -262,56 +269,58 @@ class GtzanDataset:
                     os.mkdir(genre_dir_path)
                 plt.savefig(f'{genre_dir_path}\\{g + str(j)}.png')
 
-    def data_init(self) -> None:
-        self._create_directories()
+    def data_init(self, sec_3: bool = False) -> None:
+        directories = self.directories_3sec if sec_3 else self.directories_10sec
+        self._create_directories(directories)
 
-        genres = list(os.listdir(self.gtzan_images_original_path))
+        images_path = self.gtzan_images_3_sec_original if sec_3 else self.gtzan_images_original_path
+        genres = list(os.listdir(images_path))
         for genre in genres:
             # Finding all images & split in train, test, and validation
             src_file_paths = []
 
             for im in glob.glob(
-                os.path.join(self.gtzan_images_original_path, f"{genre}", "*.png"), recursive=True
+                    os.path.join(images_path, f"{genre}", "*.png"), recursive=True
             ):
                 src_file_paths.append(im)
 
             # Randomizing directories content
             random.shuffle(src_file_paths)
 
-            test_files = src_file_paths[0:10]
-            val_files = src_file_paths[10:20]
+            test_files = src_file_paths[0:5]
+            val_files = src_file_paths[5:20]
             train_files = src_file_paths[20:]
 
             #  make destination folders for train and test images
-            for folder_name, path in self.directories.items():
+            for folder_name, path in directories.items():
                 if not os.path.exists(path + f"\\{genre}"):
                     os.mkdir(f"{path}\\{genre}")
 
             # Coping training and testing images over
             self._copy_files(
-                file_paths=train_files, dest_dir=f"{self.directories['train_dir']}\\{genre}\\"
+                file_paths=train_files, dest_dir=f"{directories['train_dir']}\\{genre}\\"
             )
             self._copy_files(
-                file_paths=test_files, dest_dir=f"{self.directories['test_dir']}\\{genre}\\"
+                file_paths=test_files, dest_dir=f"{directories['test_dir']}\\{genre}\\"
             )
             self._copy_files(
-                file_paths=val_files, dest_dir=f"{self.directories['val_dir']}\\{genre}\\"
+                file_paths=val_files, dest_dir=f"{directories['val_dir']}\\{genre}\\"
             )
 
     def sanity_data_test(self) -> None:
 
-        print("Genres directories in train data:", len(os.listdir(self.directories["train_dir"])))
-        print("Genres directories in test data:", len(os.listdir(self.directories["test_dir"])))
+        print("Genres directories in train data:", len(os.listdir(self.directories_10sec["train_dir"])))
+        print("Genres directories in test data:", len(os.listdir(self.directories_10sec["test_dir"])))
         print(
-            "Genres directories in validation data:", len(os.listdir(self.directories["val_dir"]))
+            "Genres directories in validation data:", len(os.listdir(self.directories_10sec["val_dir"]))
         )
 
         print("\nTotal number of images in:")
         for genre in self.genres:
-            for folder_name, path in self.directories.items():
+            for folder_name, path in self.directories_10sec.items():
                 print(
                     f"\t{folder_name} of {genre} songs: "
-                    + str(len(os.listdir(f"{self.directories[folder_name]}\\{genre}"))),
+                    + str(len(os.listdir(f"{self.directories_10sec[folder_name]}\\{genre}"))),
                 )
             print()
 

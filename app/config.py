@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     gztan_validation_dir: str
     gztan_test_dir: str
 
+    gztan_train_3sec_dir: str
+    gztan_validation_3sec_dir: str
+    gztan_test_3sec_dir: str
+
     class Config:
         env_file = "../ENV/local.env"
         env_file_encoding = "utf-8"
