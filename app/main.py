@@ -1,3 +1,5 @@
+from multiprocessing import Process
+
 from app.gztan.data.gztan import GtzanDataset
 
 # disable_cuda()
@@ -7,10 +9,25 @@ from app.gztan.data.gztan import GtzanDataset
 # gtzan.sanity_data_test()
 gtzan = GtzanDataset()
 # gtzan.make_3_sec_wavs()
-gtzan.make_3_sec_images()
 
-gtzan.data_init()
-gtzan.sanity_data_test()
+if __name__ == '__main__':
+    p1 = Process(target=gtzan.make_3_sec_images, args=("disco",))
+    p1.start()
+    p2 = Process(target=gtzan.make_3_sec_images, args=("hiphop",))
+    p2.start()
+    p3 = Process(target=gtzan.make_3_sec_images, args=("jazz",))
+    p3.start()
+    p4 = Process(target=gtzan.make_3_sec_images, args=("metal",))
+    p4.start()
+
+    p1.join()
+    p2.join()
+    p3.join()
+    p4.join()
+
+
+# gtzan.data_init()
+# gtzan.sanity_data_test()
 
 
 # build_model()

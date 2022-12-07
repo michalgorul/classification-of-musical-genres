@@ -245,17 +245,18 @@ class GtzanDataset:
                     except Exception:
                         pass
 
-    def make_3_sec_images(self) -> None:
-        genres = list(os.listdir(self.gtzan_genres_3_sec_original))
-
-        for g in genres:
-            print(f"Current genre: {g}")
-            j = 0
-            for filename in os.listdir(os.path.join(self.gtzan_genres_3_sec_original, f"{g}")):
-                print(f"Current filename: {filename}")
+    def make_3_sec_images(self, genre: str) -> None:
+        # genres = list(os.listdir(self.gtzan_genres_3_sec_original))
+        #
+        # for g in genres:
+        g = genre
+        j = 0
+        for filename in os.listdir(os.path.join(self.gtzan_genres_3_sec_original, f"{g}")):
+            j = j + 1
+            if j > 100:
+                print(f"Current file in {g}: {j}")
 
                 song = os.path.join(f'{self.gtzan_genres_3_sec_original}\\{g}', f'{filename}')
-                j = j + 1
 
                 y, sr = librosa.load(song, duration=3)
                 # print(sr)
@@ -268,6 +269,7 @@ class GtzanDataset:
                 if not os.path.exists(genre_dir_path):
                     os.mkdir(genre_dir_path)
                 plt.savefig(f'{genre_dir_path}\\{g + str(j)}.png')
+
 
     def data_init(self, sec_3: bool = False) -> None:
         directories = self.directories_3sec if sec_3 else self.directories_10sec
