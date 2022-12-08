@@ -16,6 +16,12 @@ class Settings(BaseSettings):
     gztan_validation_3sec_dir: str
     gztan_test_3sec_dir: str
 
+    fma_metadata_path: str
+
+    fma_train_dir: str
+    fma_validation_dir: str
+    fma_test_dir: str
+
     class Config:
         env_file = "../ENV/local.env"
         env_file_encoding = "utf-8"

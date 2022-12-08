@@ -1,15 +1,20 @@
+from PIL import ImageFile
 from keras import models, layers, activations, optimizers, losses, metrics, Sequential
 from keras.layers import Flatten
 
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-def build_model() -> Sequential:
+
+def build_model(sec_3: bool = True) -> Sequential:
     """
     Function creating keras model
     :return: a model
     """
+
+    input_shape = (150, 150, 3) if sec_3 else (288, 432, 3)
     model = models.Sequential()
 
-    model.add(layers.Conv2D(8, (3, 3), activation=activations.relu, input_shape=(150, 150, 3)))
+    model.add(layers.Conv2D(8, (3, 3), activation=activations.relu, input_shape=input_shape))
     model.add(layers.MaxPooling2D((2, 2)))
     model.add(layers.Dropout(0.3))
 
@@ -44,3 +49,4 @@ def build_model() -> Sequential:
     )
 
     return model
+

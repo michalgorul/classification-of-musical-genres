@@ -253,22 +253,21 @@ class GtzanDataset:
         j = 0
         for filename in os.listdir(os.path.join(self.gtzan_genres_3_sec_original, f"{g}")):
             j = j + 1
-            if j > 100:
-                print(f"Current file in {g}: {j}")
+            print(f"Current file in {g}: {j}")
 
-                song = os.path.join(f'{self.gtzan_genres_3_sec_original}\\{g}', f'{filename}')
+            song = os.path.join(f'{self.gtzan_genres_3_sec_original}\\{g}', f'{filename}')
 
-                y, sr = librosa.load(song, duration=3)
-                # print(sr)
-                mels = librosa.feature.melspectrogram(y=y, sr=sr)
-                fig = plt.Figure()
-                canvas = FigureCanvas(fig)
-                p = plt.imshow(librosa.power_to_db(mels, ref=np.max))
+            y, sr = librosa.load(song, duration=3)
+            # print(sr)
+            mels = librosa.feature.melspectrogram(y=y, sr=sr)
+            fig = plt.Figure()
+            canvas = FigureCanvas(fig)
+            p = plt.imshow(librosa.power_to_db(mels, ref=np.max))
 
-                genre_dir_path = f'{self.gtzan_images_3_sec_original}\\{g}'
-                if not os.path.exists(genre_dir_path):
-                    os.mkdir(genre_dir_path)
-                plt.savefig(f'{genre_dir_path}\\{g + str(j)}.png')
+            genre_dir_path = f'{self.gtzan_images_3_sec_original}\\{g}'
+            if not os.path.exists(genre_dir_path):
+                os.mkdir(genre_dir_path)
+            plt.savefig(f'{genre_dir_path}\\{g + str(j)}.png')
 
 
     def data_init(self, sec_3: bool = False) -> None:
@@ -278,19 +277,19 @@ class GtzanDataset:
         images_path = self.gtzan_images_3_sec_original if sec_3 else self.gtzan_images_original_path
         genres = list(os.listdir(images_path))
         for genre in genres:
+            print(f"Current genre: {genre}")
+
             # Finding all images & split in train, test, and validation
             src_file_paths = []
 
-            for im in glob.glob(
-                    os.path.join(images_path, f"{genre}", "*.png"), recursive=True
-            ):
+            for im in glob.glob(os.path.join(images_path, f"{genre}", "*.png"), recursive=True):
                 src_file_paths.append(im)
 
             # Randomizing directories content
             random.shuffle(src_file_paths)
 
-            test_files = src_file_paths[0:5]
-            val_files = src_file_paths[5:20]
+            test_files = src_file_paths[0:50]
+            val_files = src_file_paths[50:200]
             train_files = src_file_paths[20:]
 
             #  make destination folders for train and test images
@@ -305,16 +304,20 @@ class GtzanDataset:
             self._copy_files(
                 file_paths=test_files, dest_dir=f"{directories['test_dir']}\\{genre}\\"
             )
-            self._copy_files(
-                file_paths=val_files, dest_dir=f"{directories['val_dir']}\\{genre}\\"
-            )
+            self._copy_files(file_paths=val_files, dest_dir=f"{directories['val_dir']}\\{genre}\\")
 
     def sanity_data_test(self) -> None:
 
-        print("Genres directories in train data:", len(os.listdir(self.directories_10sec["train_dir"])))
-        print("Genres directories in test data:", len(os.listdir(self.directories_10sec["test_dir"])))
         print(
-            "Genres directories in validation data:", len(os.listdir(self.directories_10sec["val_dir"]))
+            "Genres directories in train data:",
+            len(os.listdir(self.directories_10sec["train_dir"])),
+        )
+        print(
+            "Genres directories in test data:", len(os.listdir(self.directories_10sec["test_dir"]))
+        )
+        print(
+            "Genres directories in validation data:",
+            len(os.listdir(self.directories_10sec["val_dir"])),
         )
 
         print("\nTotal number of images in:")
