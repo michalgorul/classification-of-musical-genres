@@ -3,6 +3,10 @@ import os
 import shutil
 from typing import Dict, List, Any
 
+import librosa
+import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib.pyplot import figure
 from pandas import DataFrame
 
 from app.config import settings
@@ -156,3 +160,29 @@ class FmaDataset:
             print(f"Failed to get files to copy, error={e}")
 
         self._delete_dir_if_empty(os.listdir(self.genres_path))
+
+    def make_spectograms(self, genre: str, last_song: int = 935) -> None:
+        g = genre
+        j = 0
+        songs_path = self.genres_path
+        images_path = self.images_path
+        for filename in os.listdir(os.path.join(songs_path, f"{g}")):
+            j = j + 1
+            if j > last_song:
+                print(f"Current file in {g}: {j}")
+
+                song = os.path.join(f"{songs_path}\\{g}", f"{filename}")
+
+                y, sr = librosa.load(song)
+                # print(sr)
+                mels = librosa.feature.melspectrogram(y=y, sr=sr)
+                figure(figsize=(4, 2))
+                plt.imshow(librosa.power_to_db(mels, ref=np.max), aspect="auto")
+                plt.axis("off")
+
+                genre_dir_path = f"{images_path}\\{g}"
+                if not os.path.exists(genre_dir_path):
+                    os.mkdir(genre_dir_path)
+
+                plt.savefig(f"{genre_dir_path}\\{g + str(j)}.png")
+                plt.close()

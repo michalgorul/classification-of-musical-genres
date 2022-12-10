@@ -49,4 +49,3 @@ def build_model(sec_3: bool = True) -> Sequential:
     )
 
     return model
-
