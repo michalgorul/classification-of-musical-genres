@@ -11,7 +11,7 @@ def build_model(sec_3: bool = True) -> Sequential:
     :return: a model
     """
 
-    input_shape = (150, 150, 3) if sec_3 else (288, 432, 3)
+    input_shape = (288, 432, 4)
     model = models.Sequential()
 
     model.add(layers.Conv2D(8, (3, 3), activation=activations.relu, input_shape=input_shape))
@@ -43,7 +43,7 @@ def build_model(sec_3: bool = True) -> Sequential:
     model.summary()
 
     model.compile(
-        optimizer=optimizers.RMSprop(learning_rate=1e-4),
+        optimizer=optimizers.RMSprop(learning_rate=0.0005),
         loss=losses.categorical_crossentropy,
         metrics=[metrics.categorical_accuracy],
     )

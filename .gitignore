@@ -49,4 +49,12 @@ app/gztan/data/dataset/
 app/gztan/data/train/
 app/gztan/data/test/
 app/gztan/data/validation/
+app/gztan/data/train_3sec/
+app/gztan/data/test_3sec/
+app/gztan/data/validation_3sec/
+
+app/fma/data/dataset/
+app/fma/data/train/
+app/fma/data/test/
+app/fma/data/validation/
 

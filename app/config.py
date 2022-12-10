@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     gztan_test_3sec_dir: str
 
     fma_metadata_path: str
+    fma_genres_path: str
+    fma_small_dataset_path: str
+    fma_images_path: str
 
     fma_train_dir: str
     fma_validation_dir: str
