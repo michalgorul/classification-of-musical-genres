@@ -1,6 +1,19 @@
 from multiprocessing import Pool
 
-from app.fma.data.fma import FmaDataset
+from keras.callbacks import History
+
+from app.fma.data.data import (
+    list_output_of_generators,
+    get_train_data_generator,
+    get_validation_data_generator,
+)
+from app.fma.data.fma import FmaDataset, fma
+from app.fma.model.model import build_model
+from app.plotting.plot import (
+    show_training_and_validation_loss,
+    show_training_and_validation_accuracy,
+)
+
 
 # from keras.callbacks import History
 #
@@ -66,22 +79,59 @@ from app.fma.data.fma import FmaDataset
 #     )
 #
 #
-# def train_fma() -> None:
-#     fma = FmaDataset()
-#     fma.make_spectograms("Electronic")
-#     return
+def train_fma() -> None:
+    # fma.directories
+    # fma.make_spectograms("Electronic")
+    # fma.data_init()
+    # list_output_of_generators()
+
+    train_data = get_train_data_generator()
+    val_data = get_validation_data_generator()
+
+    model = build_model()
+
+    history: History = model.fit(
+        train_data,
+        steps_per_epoch=train_data.samples / train_data.batch_size,
+        epochs=1,
+        validation_data=val_data,
+        validation_steps=val_data.samples / val_data.batch_size,
+    )
+
+    model.save("fma/model/fma.h5")
+    #
+    train_loss_values = history.history.get("loss")
+    val_loss_values = history.history.get("val_loss")
+    train_accuracy = history.history.get("categorical_accuracy")
+    val_accuracy = history.history.get("val_categorical_accuracy")
+    num_of_epochs = range(1, len(train_accuracy) + 1)
+
+    print(f"categorical_accuracy max: {max(history.history.get('categorical_accuracy'))}")
+    print(f"val_categorical_accuracy max: {max(history.history.get('val_categorical_accuracy'))}")
+    print(f"loss min: {min(history.history.get('loss'))}")
+    print(f"val_loss min: {min(history.history.get('val_loss'))}")
+
+    show_training_and_validation_loss(
+        epochs=num_of_epochs, loss_values=train_loss_values, val_loss_values=val_loss_values
+    )
+
+    show_training_and_validation_accuracy(
+        epochs=num_of_epochs, acc=train_accuracy, val_acc=val_accuracy
+    )
+
+    return
 
 
 # train_gtzan()
-# train_fma()
+train_fma()
 
-if __name__ == "__main__":
-    fma = FmaDataset()
-
-    with Pool(1) as p:
-        p.map(
-            fma.make_spectograms,
-            [
-                "Experimental",
-            ],
-        )
+# if __name__ == "__main__":
+#     fma = FmaDataset()
+#
+#     with Pool(1) as p:
+#         p.map(
+#             fma.make_spectograms,
+#             [
+#                 "Experimental",
+#             ],
+#         )

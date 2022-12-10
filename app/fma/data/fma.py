@@ -1,5 +1,6 @@
 import glob
 import os
+import random
 import shutil
 from typing import Dict, List, Any
 
@@ -186,3 +187,42 @@ class FmaDataset:
 
                 plt.savefig(f"{genre_dir_path}\\{g + str(j)}.png")
                 plt.close()
+
+    def data_init(self) -> None:
+        directories = self.directories
+        self._create_directories(directories)
+
+        images_path = self.images_path
+        genres = list(os.listdir(images_path))
+        for genre in genres:
+            print(f"Current genre: {genre}")
+
+            # Finding all images & split in train, test, and validation
+            src_file_paths = []
+
+            for file in glob.glob(os.path.join(images_path, f"{genre}", "*.png"), recursive=True):
+                src_file_paths.append(file)
+
+            # Randomizing directories content
+            random.shuffle(src_file_paths)
+
+            test_files = src_file_paths[0:50]
+            val_files = src_file_paths[50:200]
+            train_files = src_file_paths[20:]
+
+            #  make destination folders for train and test images
+            for folder_name, path in directories.items():
+                if not os.path.exists(path + f"\\{genre}"):
+                    os.mkdir(f"{path}\\{genre}")
+
+            # Coping training and testing images over
+            self._copy_files(
+                file_paths=train_files, dest_dir=f"{directories['train_dir']}\\{genre}\\"
+            )
+            self._copy_files(
+                file_paths=test_files, dest_dir=f"{directories['test_dir']}\\{genre}\\"
+            )
+            self._copy_files(file_paths=val_files, dest_dir=f"{directories['val_dir']}\\{genre}\\")
+
+
+fma = FmaDataset()
