@@ -11,11 +11,18 @@ import librosa
 import librosa.display
 import numpy as np
 import winsound
+from keras.callbacks import History
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_template import FigureCanvas
 from pydub import AudioSegment
 
 from app.config import settings
+from app.gztan.data.data import get_train_data_generator, get_validation_data_generator
+from app.gztan.model.model import build_model
+from app.plotting.plot import (
+    show_training_and_validation_loss,
+    show_training_and_validation_accuracy,
+)
 
 
 class GtzanDataset:
@@ -255,7 +262,7 @@ class GtzanDataset:
             j = j + 1
             print(f"Current file in {g}: {j}")
 
-            song = os.path.join(f'{self.gtzan_genres_3_sec_original}\\{g}', f'{filename}')
+            song = os.path.join(f"{self.gtzan_genres_3_sec_original}\\{g}", f"{filename}")
 
             y, sr = librosa.load(song, duration=3)
             # print(sr)
@@ -264,11 +271,10 @@ class GtzanDataset:
             canvas = FigureCanvas(fig)
             p = plt.imshow(librosa.power_to_db(mels, ref=np.max))
 
-            genre_dir_path = f'{self.gtzan_images_3_sec_original}\\{g}'
+            genre_dir_path = f"{self.gtzan_images_3_sec_original}\\{g}"
             if not os.path.exists(genre_dir_path):
                 os.mkdir(genre_dir_path)
-            plt.savefig(f'{genre_dir_path}\\{g + str(j)}.png')
-
+            plt.savefig(f"{genre_dir_path}\\{g + str(j)}.png")
 
     def data_init(self, sec_3: bool = False) -> None:
         directories = self.directories_3sec if sec_3 else self.directories_10sec
@@ -328,6 +334,49 @@ class GtzanDataset:
                     + str(len(os.listdir(f"{self.directories_10sec[folder_name]}\\{genre}"))),
                 )
             print()
+
+    def train_gtzan(self) -> None:
+        # gtzan.make_3_sec_wavs()
+        # gtzan.data_init(sec_3=True)
+
+        # gtzan.data_init()
+        # gtzan.sanity_data_test()
+
+        train_data = get_train_data_generator(False)
+        val_data = get_validation_data_generator(False)
+
+        model = build_model(False)
+
+        history: History = model.fit(
+            train_data,
+            steps_per_epoch=train_data.samples / train_data.batch_size,
+            epochs=80,
+            validation_data=val_data,
+            validation_steps=val_data.samples / val_data.batch_size,
+        )
+
+        model.save("gztan/model/gztan.h5")
+        #
+        train_loss_values = history.history.get("loss")
+        val_loss_values = history.history.get("val_loss")
+        train_accuracy = history.history.get("categorical_accuracy")
+        val_accuracy = history.history.get("val_categorical_accuracy")
+        num_of_epochs = range(1, len(train_accuracy) + 1)
+
+        print(f"categorical_accuracy max: {max(history.history.get('categorical_accuracy'))}")
+        print(
+            f"val_categorical_accuracy max: {max(history.history.get('val_categorical_accuracy'))}"
+        )
+        print(f"loss min: {min(history.history.get('loss'))}")
+        print(f"val_loss min: {min(history.history.get('val_loss'))}")
+
+        show_training_and_validation_loss(
+            epochs=num_of_epochs, loss_values=train_loss_values, val_loss_values=val_loss_values
+        )
+
+        show_training_and_validation_accuracy(
+            epochs=num_of_epochs, acc=train_accuracy, val_acc=val_accuracy
+        )
 
 
 gtzan: GtzanDataset = GtzanDataset()

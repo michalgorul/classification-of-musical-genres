@@ -40,7 +40,7 @@ def build_model() -> Sequential:
     model.add(Flatten())
 
     model.add(layers.Dense(256, activation=activations.relu))
-    model.add(layers.Dense(2, activation=activations.softmax))
+    model.add(layers.Dense(8, activation=activations.softmax))
 
     model.summary()
 

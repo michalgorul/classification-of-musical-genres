@@ -1,16 +1,11 @@
 from keras.preprocessing.image import ImageDataGenerator, DirectoryIterator
 
-from app.fma.data.fma import fma
-
-train_dir = fma.directories["train_dir"]
-val_dir = fma.directories["val_dir"]
-
 TARGET_SIZE = (200, 400)
 INPUT_SHAPE = (200, 400, 4)
-BATCH_SIZE = 20
+BATCH_SIZE = 128
 
 
-def get_train_data_generator() -> DirectoryIterator:
+def get_train_data_generator(train_dir) -> DirectoryIterator:
     print("Creating train data generator")
     train_datagen = ImageDataGenerator(rescale=1.0 / 255)
 
@@ -25,7 +20,7 @@ def get_train_data_generator() -> DirectoryIterator:
     return train_generator
 
 
-def get_validation_data_generator() -> DirectoryIterator:
+def get_validation_data_generator(val_dir) -> DirectoryIterator:
     print("Creating validation data generator")
     validation_datagen = ImageDataGenerator(rescale=1.0 / 255)
 

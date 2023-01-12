@@ -6,12 +6,19 @@ from typing import Dict, List, Any
 
 import librosa
 import numpy as np
+from keras.callbacks import History
 from matplotlib import pyplot as plt
 from matplotlib.pyplot import figure
 from pandas import DataFrame
 
 from app.config import settings
 from app.fma import utils
+from app.fma.data.data import get_train_data_generator, get_validation_data_generator
+from app.fma.model.model import build_model
+from app.plotting.plot import (
+    show_training_and_validation_loss,
+    show_training_and_validation_accuracy,
+)
 
 
 class FmaDataset:
@@ -190,7 +197,7 @@ class FmaDataset:
 
     def data_init(self) -> None:
         directories = self.directories
-        self._create_directories(directories)
+        self._create_directories(list(directories.values()))
 
         images_path = self.images_path
         genres = list(os.listdir(images_path))
@@ -208,7 +215,7 @@ class FmaDataset:
 
             test_files = src_file_paths[0:50]
             val_files = src_file_paths[50:200]
-            train_files = src_file_paths[20:]
+            train_files = src_file_paths[200:]
 
             #  make destination folders for train and test images
             for folder_name, path in directories.items():
@@ -223,6 +230,47 @@ class FmaDataset:
                 file_paths=test_files, dest_dir=f"{directories['test_dir']}\\{genre}\\"
             )
             self._copy_files(file_paths=val_files, dest_dir=f"{directories['val_dir']}\\{genre}\\")
+        return
+
+    def train_fma(self, epochs: int = 50) -> None:
+        train_dir = self.directories["train_dir"]
+        val_dir = self.directories["val_dir"]
+        train_data = get_train_data_generator(train_dir)
+        val_data = get_validation_data_generator(val_dir)
+
+        model = build_model()
+
+        history: History = model.fit(
+            train_data,
+            steps_per_epoch=train_data.samples / train_data.batch_size,
+            epochs=epochs,
+            validation_data=val_data,
+            validation_steps=val_data.samples / val_data.batch_size,
+        )
+
+        model.save("fma/model/fma.h5")
+        #
+        train_loss_values = history.history.get("loss")
+        val_loss_values = history.history.get("val_loss")
+        train_accuracy = history.history.get("categorical_accuracy")
+        val_accuracy = history.history.get("val_categorical_accuracy")
+        num_of_epochs = range(1, len(train_accuracy) + 1)
+
+        print(f"categorical_accuracy max: {max(history.history.get('categorical_accuracy'))}")
+        print(
+            f"val_categorical_accuracy max: {max(history.history.get('val_categorical_accuracy'))}"
+        )
+        print(f"loss min: {min(history.history.get('loss'))}")
+        print(f"val_loss min: {min(history.history.get('val_loss'))}")
+
+        show_training_and_validation_loss(
+            epochs=num_of_epochs, loss_values=train_loss_values, val_loss_values=val_loss_values
+        )
+
+        show_training_and_validation_accuracy(
+            epochs=num_of_epochs, acc=train_accuracy, val_acc=val_accuracy
+        )
+        return
 
 
 fma = FmaDataset()
