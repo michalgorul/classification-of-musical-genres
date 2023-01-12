@@ -50,3 +50,21 @@ This data hopefully can give the opportunity to do just that.
 
 - The GTZAN dataset is the most-used public dataset for evaluation in machine listening research for music genre recognition (MGR). The files were collected in 2000-2001 from a variety of sources including personal CDs, radio, microphone recordings, in order to represent a variety of recording conditions (http://marsyas.info/downloads/datasets.html).
 - This was a team project for uni, so the effort in creating the images and features wasn't only my own. So, I want to thank James Wiltshire, Lauren O'Hare and Minyu Lei for being the best teammates ever and for having so much fun and learning so much during the 3 days we worked on this.
+
+
+### FMA - Free Music Archive - Small & Medium
+
+Source: https://github.com/mdeff/fma
+
+#### Content
+
+The Free Music Archive (FMA) is a large-scale dataset for evaluating several tasks in Music Information Retrieval. It consists of 343 days of audio from 106,574 tracks from 16,341 artists and 14,854 albums, arranged in a hierarchical taxonomy of 161 genres. It provides full-length and high-quality audio, pre-computed features, together with track- and user-level metadata, tags, and free-form text such as biographies.
+
+There are four subsets defined by the authors:
+
+- Full: the complete dataset,
+- Large: the full dataset with audio limited to 30 seconds clips extracted from the middle of the tracks (or entire track if shorter than 30 seconds),
+- Medium: a selection of 25,000 30s clips having a single root genre,
+- Small: a balanced subset containing 8,000 30s clips with 1,000 clips per one of 8 root genres.
+
+The official split into training, validation and test sets (80/10/10) uses stratified sampling to preserve the percentage of tracks per genre. Songs of the same artists are part of one set only.
